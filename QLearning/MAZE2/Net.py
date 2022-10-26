@@ -9,21 +9,20 @@ import torch
 
 class Net(torch.nn.Module):
 
-    def __init__(self, in_channels, n_actions):
+    def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = torch.nn.Conv2d(in_channels, 32, kernel_size=8, stride=4)
-        # self.bn1 = nn.BatchNorm2d(32)
-        self.conv2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=2)
-        # self.bn2 = nn.BatchNorm2d(64)
-        self.conv3 = torch.nn.Conv2d(64, 64, kernel_size=3, stride=1)
-        # self.bn3 = nn.BatchNorm2d(64)
-        self.fc4 = torch.nn.Linear(7 * 7 * 64, 512)
-        self.head = torch.nn.Linear(512, n_actions)
+        self.hidden1 = torch.nn.Linear(4, 256)
+        self.hidden2 = torch.nn.Linear(256, 256)
+        self.hidden3 = torch.nn.Linear(256, 128)
+        self.predict = torch.nn.Linear(128, 4)
 
-    def forward(self, x):
-        x = torch.relu(self.conv1(x))
-        x = torch.relu(self.conv2(x))
-        x = torch.relu(self.conv3(x))
-        x = torch.relu(self.fc4(x.view(x.size(0), -1)))
-        action = self.head(x)
+    def forward(self, observation):
+        x = torch.Tensor(observation).cuda()
+        x = self.hidden1(x)
+        x = torch.relu(x)
+        x = self.hidden2(x)
+        x = torch.relu(x)
+        x = self.hidden3(x)
+        x = torch.relu(x)
+        action = self.predict(x)
         return action

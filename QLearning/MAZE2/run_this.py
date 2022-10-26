@@ -38,7 +38,7 @@ success_count = 0
 fail_count = 0
 
 
-for i in range(100000):
+for i in range(10000):
     print(f"Episode: {i}")
     # 计时开始
     start_time = time.time()
@@ -89,10 +89,10 @@ for i in range(100000):
                 loss_list.append(period_loss)
 
             # 提前终止训练判断
-            # if len(reward_list) > 101:
-            #     # early_stop_flag = early_stop.early_stop_by_reward(reward_list[-200:-100], reward_list[-100:])
-            #     # early_stop_flag = early_stop.early_stop_by_reward(reward_list[-100:-50], reward_list[-50:])
-            #     early_stop_flag = early_stop.early_stop_by_step(step_list[-100:-50], step_list[-50:])
+            if len(reward_list) > 101:
+                # early_stop_flag = early_stop.early_stop_by_reward(reward_list[-200:-100], reward_list[-100:])
+                # early_stop_flag = early_stop.early_stop_by_reward(reward_list[-100:-50], reward_list[-50:])
+                early_stop_flag = early_stop.early_stop_by_step(step_list[-100:-50], step_list[-50:])
 
             print(f"episode {i}, step = {step}, cost {time_cost} s, loss = {period_loss}, reward = {episode_reward_sum}, success = {success_flag}")
             if success_flag:
@@ -102,9 +102,9 @@ for i in range(100000):
             print(f"success {success_count}, failed {fail_count}")
             break
 
-    # if early_stop_flag:
-    #     print(f"Early stop!")
-    #     break
+    if early_stop_flag:
+        print(f"Early stop!")
+        break
 
     print("--------")
 

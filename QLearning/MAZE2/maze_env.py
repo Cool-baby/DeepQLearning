@@ -130,13 +130,13 @@ class Maze(tk.Tk, object):
         if s_ == self.canvas.coords(self.oval):
             reward = 10
             done = True
+            success_flag = True
         elif s_ in [self.canvas.coords(self.hell1), self.canvas.coords(self.hell2), self.canvas.coords(self.hell3), self.canvas.coords(self.hell4), self.canvas.coords(self.hell5)]:
             reward = -10
             done = True
         else:
             reward = -0.1
             done = False
-            success_flag = True
 
         # 返回 下一状态，奖励和是否结束
         return s_, reward, done, success_flag
