@@ -9,8 +9,8 @@ import time
 import tkinter as tk
 
 UNIT = 40  # 像素
-MAZE_H = 4  # 网格高度
-MAZE_W = 4  # 网格宽度
+MAZE_H = 10  # 网格高度
+MAZE_W = 10  # 网格宽度
 
 
 class Maze(tk.Tk, object):
@@ -38,22 +38,42 @@ class Maze(tk.Tk, object):
 
         # 起始点
         origin = np.array([20, 20])
+        # 终止点
+        over = np.array([100, 100])
 
         # 失败格子1
-        hell1_center = origin + np.array([UNIT * 2, UNIT])
+        hell1_center = over + np.array([UNIT * 2, UNIT])
         self.hell1 = self.canvas.create_rectangle(
             hell1_center[0] - 15, hell1_center[1] - 15,
             hell1_center[0] + 15, hell1_center[1] + 15,
             fill='black')
         # 失败格子2
-        hell2_center = origin + np.array([UNIT, UNIT * 2])
+        hell2_center = over + np.array([UNIT, UNIT * 2])
         self.hell2 = self.canvas.create_rectangle(
             hell2_center[0] - 15, hell2_center[1] - 15,
             hell2_center[0] + 15, hell2_center[1] + 15,
             fill='black')
+        # 失败格子3
+        hell3_center = over + np.array([UNIT * 3, UNIT * 3])
+        self.hell3 = self.canvas.create_rectangle(
+            hell3_center[0] - 15, hell3_center[1] - 15,
+            hell3_center[0] + 15, hell3_center[1] + 15,
+            fill='black')
+        # 失败格子4
+        hell4_center = over + np.array([UNIT * 2, UNIT * 4])
+        self.hell4 = self.canvas.create_rectangle(
+            hell4_center[0] - 15, hell4_center[1] - 15,
+            hell4_center[0] + 15, hell4_center[1] + 15,
+            fill='black')
+        # 失败格子5
+        hell5_center = over + np.array([UNIT * 4, UNIT * 2])
+        self.hell5 = self.canvas.create_rectangle(
+            hell5_center[0] - 15, hell5_center[1] - 15,
+            hell5_center[0] + 15, hell5_center[1] + 15,
+            fill='black')
 
         # 创建椭圆形，代表成功
-        oval_center = origin + UNIT * 2
+        oval_center = over + UNIT * 2
         self.oval = self.canvas.create_oval(
             oval_center[0] - 15, oval_center[1] - 15,
             oval_center[0] + 15, oval_center[1] + 15,
@@ -71,7 +91,7 @@ class Maze(tk.Tk, object):
     # 更新画布，返回当前位置
     def reset(self):
         self.update()
-        time.sleep(0.5)
+        # time.sleep(0.1)
         self.canvas.delete(self.rect)
         origin = np.array([20, 20])
         self.rect = self.canvas.create_rectangle(
@@ -103,39 +123,25 @@ class Maze(tk.Tk, object):
 
         s_ = self.canvas.coords(self.rect)  # 获取下一状态
 
+        # 成功 or 失败 Flag
+        success_flag = False
+
         # 奖励策略
         if s_ == self.canvas.coords(self.oval):
-            reward = 1
+            reward = 10
             done = True
-        elif s_ in [self.canvas.coords(self.hell1), self.canvas.coords(self.hell2)]:
-            reward = -1
+        elif s_ in [self.canvas.coords(self.hell1), self.canvas.coords(self.hell2), self.canvas.coords(self.hell3), self.canvas.coords(self.hell4), self.canvas.coords(self.hell5)]:
+            reward = -10
             done = True
         else:
             reward = -0.1
             done = False
+            success_flag = True
 
         # 返回 下一状态，奖励和是否结束
-        return s_, reward, done
+        return s_, reward, done, success_flag
 
     # 更新画布
     def render(self):
-        time.sleep(0.1)
+        # time.sleep(0.1)
         self.update()
-
-
-# def update():
-#     for t in range(10):
-#         s = env.reset()
-#         print(s)
-#         while True:
-#             env.render()
-#             a = 2
-#             s, r, done = env.step(a)
-#             if done:
-#                 break
-#
-#
-# if __name__ == '__main__':
-#     env = Maze()
-#     env.after(1000, update)
-#     env.mainloop()

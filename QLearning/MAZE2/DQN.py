@@ -8,8 +8,8 @@ import torch
 from Net import Net
 import numpy as np
 
-MEMORY_CAPACITY = 2000                          # 记忆库容量
-BATCH_SIZE = 128                                 # 批处理样本大小
+MEMORY_CAPACITY = 10000                          # 记忆库容量
+BATCH_SIZE = 32                                 # 批处理样本大小
 TARGET_REPLACE_ITER = 100                       # 目标网络更新频率
 EPSILON = 0.9                                   # 贪心策略
 GAMMA = 0.9                                     # 奖励衰减
@@ -26,7 +26,7 @@ class DQN:
         self.optimizer = torch.optim.Adam(self.eval_net.parameters(), lr=0.01)
         self.loss_func = torch.nn.MSELoss()
 
-    # 选择行动
+    # 选择行动（训练过程中贪心探索）
     def choose_action(self, x):
         x = torch.unsqueeze(torch.tensor(x), 0)
         # 贪心
@@ -40,6 +40,17 @@ class DQN:
         else:
             action = np.random.randint(0, 4)
             # print(f">0.9: {action}")
+        return action
+
+    # 预测行动
+    def predict_action(self, x):
+        x = torch.unsqueeze(torch.tensor(x), 0)
+        actions_value = self.eval_net.forward(x)
+        print(actions_value)
+        # 获取收益最大的action
+        action = torch.max(actions_value, 1)[1].data.numpy()
+        action = action[0]
+
         return action
 
     # 存储记忆
@@ -67,7 +78,7 @@ class DQN:
         b_a = torch.LongTensor(b_memory[:, 4:5].astype(int))
         # 将BATCH_SIZE个r抽出
         b_r = torch.Tensor(b_memory[:, 5:6])
-        # 将BATCH_SIZE个s_抽出
+        # 将BATCH_SIZE个s_抽出萨的
         b_s_ = torch.Tensor(b_memory[:, -4:])
 
         # 获取BATCH_SIZE个transition的评估值和目标值，并利用损失函数和优化器进行评估网络参数更新
@@ -79,6 +90,8 @@ class DQN:
         q_target = b_r + GAMMA * q_next.max(1)[0].view(BATCH_SIZE, 1)
         # 输入BATCH_SIZE个评估值和BATCH_SIZE个目标值，使用均方损失函数
         loss = self.loss_func(q_eval, q_target)
+        # 记录loss
+        loss_number = loss.data.numpy()
 
         # 清空上一步的残余更新参数值
         self.optimizer.zero_grad()
@@ -87,5 +100,4 @@ class DQN:
         # 更新评估网络的所有参数
         self.optimizer.step()
 
-
-
+        return loss_number
