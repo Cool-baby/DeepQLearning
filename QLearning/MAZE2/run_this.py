@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import time
-import early_stop
+# import early_stop
 
 START_LEARN = 3000                          # 记忆库中达到一定数量开始学习
 model_name = "model/model020.pkl"                 # 已有模型文件名称
@@ -20,8 +20,8 @@ dqn = DQN()
 env = Maze()
 
 # 如果有已经训练好的模型，加载模型，在模型基础上训练
-if os.path.exists(model_name):
-    dqn.eval_net = torch.load(model_name)
+# if os.path.exists(model_name):
+#     dqn.eval_net = torch.load(model_name)
 
 # 记录reward
 reward_list = []
@@ -89,10 +89,10 @@ for i in range(10000):
                 loss_list.append(period_loss)
 
             # 提前终止训练判断
-            if len(reward_list) > 101:
+            # if len(reward_list) > 101:
                 # early_stop_flag = early_stop.early_stop_by_reward(reward_list[-200:-100], reward_list[-100:])
                 # early_stop_flag = early_stop.early_stop_by_reward(reward_list[-100:-50], reward_list[-50:])
-                early_stop_flag = early_stop.early_stop_by_step(step_list[-100:-50], step_list[-50:])
+                # early_stop_flag = early_stop.early_stop_by_step(step_list[-100:-50], step_list[-50:])
 
             print(f"episode {i}, step = {step}, cost {time_cost} s, loss = {period_loss}, reward = {episode_reward_sum}, success = {success_flag}")
             if success_flag:

@@ -80,7 +80,7 @@ class DQN:
         b_a = torch.LongTensor(b_memory[:, 4:5].astype(int)).to(device)
         # 将BATCH_SIZE个r抽出
         b_r = torch.Tensor(b_memory[:, 5:6]).to(device)
-        # 将BATCH_SIZE个s_抽出萨的
+        # 将BATCH_SIZE个s_抽出
         b_s_ = torch.Tensor(b_memory[:, -4:])
 
         # 获取BATCH_SIZE个transition的评估值和目标值，并利用损失函数和优化器进行评估网络参数更新
